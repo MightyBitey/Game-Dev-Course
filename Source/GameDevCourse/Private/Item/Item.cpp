@@ -20,7 +20,7 @@ void AItem::BeginPlay()
 
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage();
+		GEngine->AddOnScreenDebugMessage(1, 60.f, FColor::Cyan,FString("Item on screen!"));
 	}
 
 	
