@@ -11,11 +11,16 @@ class GAMEDEVCOURSE_API AItem : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+	
 	
 	AItem();
 virtual void Tick(float DeltaTime) override;
 protected:
+private:
+	float RunningTime = 0.f;
+	float Amplitude = .25f;
+	float TimeConstant = 5.f;
 	
 	virtual void BeginPlay() override;
 };
