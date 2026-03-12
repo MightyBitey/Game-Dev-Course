@@ -37,6 +37,9 @@ private:
 	float RunningTime = 0.f;
 	
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* ItemMesh;
 };
 
 template <typename T>
@@ -44,3 +47,4 @@ T AItem::Avg(T First, T Second)
 {
 	return (First + Second) / 2; 
 }
+
