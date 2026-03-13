@@ -1,22 +1,64 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-#include "Components/CapsuleComponent.h"
 #include "Pawns/Bird.h"
+#include "EnhancedInputSubsystems.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/InputComponent.h"
+#include "EnhancedInputComponent.h"
+
+
+
 
 
 ABird::ABird()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	BirdCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MyCapsule"));
+	BirdCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("BirdCapsule"));
 	BirdCapsule->InitCapsuleSize(15.f,20.f);
 	SetRootComponent(BirdCapsule);
+	BirdMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("BirdMesh"));
+	BirdMesh->SetupAttachment(GetRootComponent());
+	BirdSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("BirdSpringArm"));
+	BirdSpringArm->SetupAttachment(GetRootComponent());
+	BirdSpringArm->TargetArmLength = 300.f;
+	BirdCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("BirdCamera"));
+	BirdCamera->SetupAttachment(BirdSpringArm);
+	AutoPossessPlayer = EAutoReceiveInput::Player0;
 }
 
 
 void ABird::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("Bird Halfheight: %f"), BirdCapsule->GetUnscaledCapsuleHalfHeight());
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			SubSystem->AddMappingContext(BirdMappingContext,0);
+		}
+	}
+}
+
+void ABird::Move(const FInputActionValue& Value)
+{
+	const float DirectionValue = Value.Get<float>();
+	if (Controller && (DirectionValue != 0.f))
+	{
+		FVector Forward = GetActorForwardVector();
+		AddMovementInput(Forward,DirectionValue);
+	}
+}
+
+void ABird::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisValue = Value.Get<FVector2D>();
+	if (GetController())
+	{
+		AddControllerYawInput(LookAxisValue.X);
+		AddControllerPitchInput(LookAxisValue.Y);
+	}
 }
 
 
@@ -30,5 +72,10 @@ void ABird::Tick(float DeltaTime)
 void ABird::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (UEnhancedInputComponent* EnhancedInputComponent  = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(MoveAction,ETriggerEvent::Triggered, this, &ABird::Move);
+		EnhancedInputComponent->BindAction(LookAction,ETriggerEvent::Triggered, this, &ABird::Look);
+	}
 }
 
