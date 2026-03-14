@@ -7,6 +7,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GroomComponent.h"
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -15,7 +17,16 @@ APlayerCharacter::APlayerCharacter()
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
-	
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0, 400.f, 0);
+
+	Hair = CreateDefaultSubobject<UGroomComponent>(TEXT("Hair"));
+	Hair->SetupAttachment(GetMesh());
+	Hair->AttachmentName = FString("head");
+
+	Eyebrows = CreateDefaultSubobject<UGroomComponent>(TEXT("Eyebrows"));
+	Eyebrows->SetupAttachment(GetMesh());
+	Eyebrows->AttachmentName = FString("head");
 	
 	PlayerSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("PlayerSpringArm"));
 	PlayerSpringArm->SetupAttachment(GetRootComponent());
@@ -24,6 +35,7 @@ APlayerCharacter::APlayerCharacter()
 	
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	PlayerCamera->SetupAttachment(PlayerSpringArm);
+
 	
 }
 
@@ -48,15 +60,9 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	const FVector2D MovementVector = Value.Get<FVector2D>();
 
-	const FVector Forward = GetActorForwardVector();
-	//AddMovementInput(Forward, MovementVector.Y);
-
-	const FVector Right = GetActorRightVector();
-	//AddMovementInput(Right, MovementVector.X);
-
 	///////New System Rotation/////////
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0.0,Rotation.Yaw,0.0f);
+	const FRotator ControlRotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.0,ControlRotation.Yaw,0.0f);
 
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	AddMovementInput(ForwardDirection, MovementVector.Y);

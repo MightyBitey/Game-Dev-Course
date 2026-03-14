@@ -10,6 +10,8 @@ class UInputMappingContext;
 class UInputAction;
 class UCameraComponent;
 class USpringArmComponent;
+class UGroomComponent;
+
 UCLASS()
 class GAMEDEVCOURSE_API APlayerCharacter : public ACharacter
 {
@@ -42,4 +44,10 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = Input)
 	UCameraComponent* PlayerCamera;
+	
+	UPROPERTY(VisibleAnywhere, Category = Hair)
+	UGroomComponent* Hair;
+
+	UPROPERTY(VisibleAnywhere, Category = Hair)
+	UGroomComponent* Eyebrows;
 };
