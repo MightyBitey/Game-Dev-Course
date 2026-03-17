@@ -38,6 +38,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* LookAction;
 	
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* JumpAction;
+	
 private:
 	UPROPERTY(EditAnywhere, Category = Input)
 	USpringArmComponent* PlayerSpringArm;

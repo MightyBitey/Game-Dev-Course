@@ -35,7 +35,6 @@ APlayerCharacter::APlayerCharacter()
 	
 	PlayerCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	PlayerCamera->SetupAttachment(PlayerSpringArm);
-
 	
 }
 
@@ -95,6 +94,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	{
 		EnhancedInputComponent->BindAction(MovementAction,ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 		EnhancedInputComponent->BindAction(LookAction,ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		EnhancedInputComponent->BindAction(JumpAction,ETriggerEvent::Triggered, this, &ACharacter::Jump);
 	}
 }
 
